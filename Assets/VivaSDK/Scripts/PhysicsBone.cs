@@ -7,7 +7,6 @@ public class PhysicsBone : MonoBehaviour
     public string boneName;
 
     // Preset System
-
     [Header("Preset")]
     public BonePreset preset = BonePreset.LongHair;
 
@@ -32,6 +31,11 @@ public class PhysicsBone : MonoBehaviour
     public bool useLimit = true;
     public float speedLimit = 3f;
 
+    // Debug visuals
+    [Header("Gizmo Settings")]
+    public float rootBoneSize = 0.02f;
+    public float childBoneSize = 0.016f;
+    public bool showHierarchy = true;
     public Color markerColor = Color.green;
 
     private void OnValidate()
@@ -78,10 +82,34 @@ public class PhysicsBone : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
-        // Draw a sphere at the root bone position
+        if (!showHierarchy || boneTransform == null)
+        {
+            return;
+        }
+
+        // Draw sphere on the root bone
         Gizmos.color = markerColor;
-        Gizmos.DrawSphere(boneTransform.position, 0.1f);
+        Gizmos.DrawSphere(boneTransform.position, rootBoneSize);
+
+        DrawBoneHierarchy(boneTransform);
+    }
+
+    private void DrawBoneHierarchy(Transform bone)
+    {
+        foreach (Transform child in bone)
+        {
+            // Draw line between parent and child
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(bone.position, child.position);
+
+            // Draw sphere for child
+            Gizmos.color = markerColor;
+            Gizmos.DrawSphere(child.position, childBoneSize);
+
+            // Recursively draw children of this child
+            DrawBoneHierarchy(child);
+        }
     }
 }
