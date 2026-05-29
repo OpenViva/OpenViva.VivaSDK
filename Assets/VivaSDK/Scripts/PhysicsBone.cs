@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class PhysicsBone : MonoBehaviour
 {
+    [Header("Bone Configuration")]
+    public Transform boneTransform;
+    public string boneName;
+
     // Preset System
 
     [Header("Preset")]
@@ -32,6 +36,12 @@ public class PhysicsBone : MonoBehaviour
 
     private void OnValidate()
     {
+        // Auto-fill bone name from transform
+        if (boneTransform != null && string.IsNullOrEmpty(boneName))
+        {
+            boneName = boneTransform.name;
+        }
+
         // Auto-configure values based on preset
         ApplyPresetDefaults();
     }
@@ -70,14 +80,8 @@ public class PhysicsBone : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        // Draw a sphere at the root bone position
         Gizmos.color = markerColor;
-        Gizmos.DrawSphere(transform.position, 0.1f);
-
-        // Draw a line to parent bone if exists
-        if (transform.parent != null)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(transform.position, transform.parent.position);
-        }
+        Gizmos.DrawSphere(boneTransform.position, 0.1f);
     }
 }
