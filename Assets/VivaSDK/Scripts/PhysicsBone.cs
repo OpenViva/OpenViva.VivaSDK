@@ -41,7 +41,7 @@ public class PhysicsBone : MonoBehaviour
     private void OnValidate()
     {
         // Auto-fill bone name from transform
-        if (boneTransform != null && string.IsNullOrEmpty(boneName))
+        if (boneTransform != null)
         {
             boneName = boneTransform.name;
         }
