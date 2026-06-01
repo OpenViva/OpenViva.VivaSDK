@@ -104,6 +104,9 @@ Transform:
   - {fileID: 4842018614952198598}
   - {fileID: 4901320292111790470}
   - {fileID: 4908808740938624945}
+  - {fileID: 3946511282256408187}
+  - {fileID: 1069506098382000169}
+  - {fileID: 4464265094182490406}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &1517499486257670476
@@ -640,6 +643,67 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2855491728701953622}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1051223092257100618
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1069506098382000169}
+  - component: {fileID: 8939461642650395528}
+  m_Layer: 0
+  m_Name: EarsR-Cloth
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1069506098382000169
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1051223092257100618}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3783169323036230559}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8939461642650395528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1051223092257100618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbf21031b23335b458405101fc5b2a23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PhysicsBone
+  boneTransform: {fileID: 2083429466428143467}
+  boneName: J_Sec_Hair1_16
+  preset: 4
+  gravity: 1.8
+  damping: 0.07
+  distanceCompression: 0.5
+  stiffnessValue: 0.35
+  useStiffnessCurve: 1
+  stiffnessCurveStart: 1
+  stiffnessCurveEnd: 0.15
+  velocityAttenuation: 0.6
+  useLimit: 1
+  speedLimit: 3
+  rootBoneSize: 0.022
+  childBoneSize: 0.014
+  showHierarchy: 1
+  markerColor: {r: 0.04909396, g: 1, b: 0, a: 1}
 --- !u!1 &1111954187463727995
 GameObject:
   m_ObjectHideFlags: 0
@@ -1388,6 +1452,67 @@ Transform:
   - {fileID: 3264722523724321976}
   m_Father: {fileID: 8087056817997050296}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2215048269153032268
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4464265094182490406}
+  - component: {fileID: 2653092486023739105}
+  m_Layer: 0
+  m_Name: Tail-Cloth
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4464265094182490406
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2215048269153032268}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3783169323036230559}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2653092486023739105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2215048269153032268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbf21031b23335b458405101fc5b2a23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PhysicsBone
+  boneTransform: {fileID: 3312752572627845071}
+  boneName: J_Sec_Hair1_18
+  preset: 3
+  gravity: 2.5
+  damping: 0.15
+  distanceCompression: 0.5
+  stiffnessValue: 0.25
+  useStiffnessCurve: 1
+  stiffnessCurveStart: 1
+  stiffnessCurveEnd: 0.15
+  velocityAttenuation: 0.6
+  useLimit: 1
+  speedLimit: 3
+  rootBoneSize: 0.022
+  childBoneSize: 0.014
+  showHierarchy: 1
+  markerColor: {r: 0.04909396, g: 1, b: 0, a: 1}
 --- !u!1 &2228096727513884412
 GameObject:
   m_ObjectHideFlags: 0
@@ -1847,7 +1972,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4842018614952198598
 Transform:
   m_ObjectHideFlags: 0
@@ -2284,6 +2409,67 @@ Transform:
   - {fileID: 6816419564267665988}
   m_Father: {fileID: 7303604047435585263}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3962337583489812254
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3946511282256408187}
+  - component: {fileID: 6214192506676636935}
+  m_Layer: 0
+  m_Name: EarsL-Cloth
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3946511282256408187
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3962337583489812254}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3783169323036230559}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6214192506676636935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3962337583489812254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbf21031b23335b458405101fc5b2a23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PhysicsBone
+  boneTransform: {fileID: 7143502582875648895}
+  boneName: J_Sec_Hair1_17
+  preset: 4
+  gravity: 1.8
+  damping: 0.07
+  distanceCompression: 0.5
+  stiffnessValue: 0.35
+  useStiffnessCurve: 1
+  stiffnessCurveStart: 1
+  stiffnessCurveEnd: 0.15
+  velocityAttenuation: 0.6
+  useLimit: 1
+  speedLimit: 3
+  rootBoneSize: 0.022
+  childBoneSize: 0.014
+  showHierarchy: 1
+  markerColor: {r: 0.04909396, g: 1, b: 0, a: 1}
 --- !u!1 &4104125349720880707
 GameObject:
   m_ObjectHideFlags: 0
