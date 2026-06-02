@@ -23,6 +23,29 @@ public class CharacterExporter : EditorWindow
         GetWindow<CharacterExporter>("VivaSDK Exporter");
     }
 
+    private void OnEnable()
+    {
+        AutoSelectSceneObject();
+    }
+
+    private void AutoSelectSceneObject()
+    {
+        GameObject selectedObject = Selection.activeGameObject;
+
+        if (selectedObject == null)
+        {
+            return;
+        }
+
+        bool hasAnimator = selectedObject.GetComponent<Animator>() != null;
+
+        if (hasAnimator)
+        {
+            prefabToExport = selectedObject;
+            bundleName = selectedObject.name;
+        }
+    }
+
     private void OnGUI()
     {
         CharacterExporterGUI.DrawExportWindow(this);
