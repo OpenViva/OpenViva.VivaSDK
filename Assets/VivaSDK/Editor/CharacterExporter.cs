@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -6,6 +8,14 @@ public class CharacterExporter : EditorWindow
 {
     public GameObject prefabToExport;
     public string bundleName = "char";
+
+    // List of scripts to include in export
+    private static readonly List<string> scriptsToInclude = new()
+    {
+        "PhysicsBone",
+        "ColliderReference",
+        "CharacterInfo"
+    };
 
     [MenuItem("VivaSDK/Export Character")]
     public static void ShowWindow()
@@ -51,28 +61,37 @@ public class CharacterExporter : EditorWindow
 
         if (isSceneObject)
         {
-            string tempPrefabPath = "Assets/_TempExport.prefab";
+            string tempPrefabPath = "Assets/__TempExport.prefab";
             PrefabUtility.SaveAsPrefabAsset(prefabToExport, tempPrefabPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             assetPath = tempPrefabPath;
         }
 
-        // This properly configures the AssetBundle build
-        AssetBundleBuild build = new AssetBundleBuild
+        // Get all dependencies
+        var allDependencies = new HashSet<string>(
+            AssetDatabase.GetDependencies(assetPath, true)
+            .Where(path => !string.IsNullOrEmpty(path) && !path.EndsWith(".cs"))
+        );
+
+        // Include only specific scripts
+        CollectSpecificScriptDependencies(prefabToExport, allDependencies);
+
+        // Create the build configuration
+        AssetBundleBuild build = new()
         {
             assetBundleName = bundleName,
+            assetNames = allDependencies.ToArray()
         };
 
-        // Use BuildAssetBundlesParameters for proper configuration
-        BuildAssetBundlesParameters buildParams = new BuildAssetBundlesParameters
+        // Build the AssetBundle
+        BuildAssetBundlesParameters buildParams = new()
         {
             outputPath = tempExportFolder,
             options = BuildAssetBundleOptions.ChunkBasedCompression | BuildAssetBundleOptions.ForceRebuildAssetBundle,
             bundleDefinitions = new[] { build }
         };
 
-        // Build the AssetBundle with proper parameters
         AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(buildParams);
 
         if (manifest == null)
@@ -107,5 +126,41 @@ public class CharacterExporter : EditorWindow
         }
 
         EditorUtility.RevealInFinder(exportFolder);
+    }
+
+    private void CollectSpecificScriptDependencies(GameObject root, HashSet<string> deps)
+    {
+        foreach (var comp in root.GetComponentsInChildren<MonoBehaviour>(true))
+        {
+            if (comp == null) continue;
+
+            string componentTypeName = comp.GetType().Name;
+
+            if (scriptsToInclude.Contains(componentTypeName))
+            {
+                string scriptPath = FindScriptAssetPath(componentTypeName);
+
+                if (!string.IsNullOrEmpty(scriptPath) && scriptPath.StartsWith("Assets"))
+                {
+                    deps.Add(scriptPath);
+                    Debug.Log($"[Exporter] Included script: {componentTypeName} at {scriptPath}");
+                }
+            }
+        }
+    }
+
+    private string FindScriptAssetPath(string typeName)
+    {
+        // Look for the script file in project
+        string[] scriptFiles = AssetDatabase.FindAssets($"t:Script {typeName}");
+
+        if (scriptFiles.Length > 0)
+        {
+            // Get the first match
+            string assetPath = AssetDatabase.GUIDToAssetPath(scriptFiles[0]);
+            return assetPath;
+        }
+
+        return null;
     }
 }
