@@ -62,10 +62,6 @@ public class CharacterExporter : EditorWindow
         {
             Debug.LogError("[VivaSDK] No prefab selected!");
         }
-        else
-        {
-            Debug.Log("[VivaSDK] Character Exported!"); // TODO: Check if file is exported properly instead
-        }
 
         string exportFolder = "Assets/CharacterExports";
         if (!Directory.Exists(exportFolder))
