@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,6 +24,7 @@ public class CharacterExporter : EditorWindow
         GetWindow<CharacterExporter>("VivaSDK Exporter");
     }
 
+    #region Auto Selection
     private void OnEnable()
     {
         AutoSelectSceneObject();
@@ -45,7 +47,9 @@ public class CharacterExporter : EditorWindow
             bundleName = selectedObject.name;
         }
     }
+    #endregion
 
+    #region GUI
     private void OnGUI()
     {
         CharacterExporterGUI.DrawExportWindow(this);
@@ -55,6 +59,7 @@ public class CharacterExporter : EditorWindow
     {
         ExportAssetBundle();
     }
+    #endregion
 
     private void ExportAssetBundle()
     {
@@ -93,9 +98,6 @@ public class CharacterExporter : EditorWindow
             .Where(path => !string.IsNullOrEmpty(path) && !path.EndsWith(".cs"))
         );
 
-        // Include only specific scripts
-        CollectSpecificScriptDependencies(prefabToExport, allDependencies);
-
         // Create the build configuration
         AssetBundleBuild build = new()
         {
@@ -115,22 +117,48 @@ public class CharacterExporter : EditorWindow
 
         if (manifest == null)
         {
-            Debug.LogError("[Exporter] AssetBundle build failed. Check console for details.");
+            Debug.LogError("[VivaSDK] AssetBundle build failed. Check console for details.");
             return;
         }
 
-        // Move the bundle to the export folder
-        string builtFilePath = Path.Combine(tempExportFolder, bundleName);
-        string finalBundlePath = Path.Combine(exportFolder, bundleName + ".viva");
+        // --- Json Building Below ---
+        List<PhysicsBoneData> physicsBones = CollectPhysicsBoneData(prefabToExport);
+        // TODO: Add Collider reference data
 
-        if (File.Exists(builtFilePath))
+        // TODO: Create Thumbnail for export
+
+        string configJson = CreateConfigurationJson(bundleName, physicsBones);
+
+        // Where to export and the custom file format
+        string packagePath = Path.Combine(exportFolder, bundleName + ".viva");
+
+        using (FileStream fs = new(packagePath, FileMode.Create))
+        using (BinaryWriter writer = new(fs))
         {
-            File.Copy(builtFilePath, finalBundlePath, true);
-            Debug.Log($"[VivaSDK] Exported to: {Path.GetFullPath(finalBundlePath)}");
-        }
-        else
-        {
-            Debug.LogError("[VivaSDK] Export failed: bundle not found.");
+            // Write "VIVA" in HEX first
+            writer.Write(0x56); // V
+            writer.Write(0x49); // I
+            writer.Write(0x56); // V
+            writer.Write(0x41); // A
+
+            // Write bundle name
+            writer.Write(bundleName);
+
+            // Write JSON config
+            byte[] configBytes = System.Text.Encoding.UTF8.GetBytes(configJson);
+            writer.Write(configBytes.Length); // Write length so it can be read back inside the game
+            writer.Write(configBytes);
+
+            // TODO: Write Thumbnail
+
+            // Write bundle data
+            string bundleFilePath = Path.Combine(tempExportFolder, bundleName);
+            if (File.Exists(bundleFilePath))
+            {
+                byte[] bundleBytes = File.ReadAllBytes(bundleFilePath);
+                writer.Write(bundleBytes.Length);
+                writer.Write(bundleBytes);
+            }
         }
 
         // Clean temp files
@@ -144,42 +172,69 @@ public class CharacterExporter : EditorWindow
             Directory.Delete(tempExportFolder, true);
         }
 
+        Debug.Log($"[VivaSDK] Character exported to: {Path.GetFullPath(packagePath)}");
         EditorUtility.RevealInFinder(exportFolder);
     }
 
-    private void CollectSpecificScriptDependencies(GameObject root, HashSet<string> deps)
+    #region Data Collection
+    private List<PhysicsBoneData> CollectPhysicsBoneData(GameObject root)
     {
-        foreach (var comp in root.GetComponentsInChildren<MonoBehaviour>(true))
+        var data = new List<PhysicsBoneData>();
+
+        foreach (var bone in root.GetComponentsInChildren<PhysicsBone>(true))
         {
-            if (comp == null) continue;
+            if (bone == null) continue;
 
-            string componentTypeName = comp.GetType().Name;
-
-            if (scriptsToInclude.Contains(componentTypeName))
+            PhysicsBoneData boneData = new()
             {
-                string scriptPath = FindScriptAssetPath(componentTypeName);
+                boneName = bone.boneName,
+                preset = bone.preset.ToString(),
+                gravity = bone.gravity,
+                damping = bone.damping,
+                distanceCompression = bone.distanceCompression,
+                stiffnessValue = bone.stiffnessValue,
+                useStiffnessCurve = bone.useStiffnessCurve,
+                stiffnessCurveStart = bone.stiffnessCurveStart,
+                stiffnessCurveEnd = bone.stiffnessCurveEnd,
+                velocityAttenuation = bone.velocityAttenuation,
+                useLimit = bone.useLimit,
+                speedLimit = bone.speedLimit
+            };
 
-                if (!string.IsNullOrEmpty(scriptPath) && scriptPath.StartsWith("Assets"))
-                {
-                    deps.Add(scriptPath);
-                    Debug.Log($"[Exporter] Included script: {componentTypeName} at {scriptPath}");
-                }
-            }
+            data.Add(boneData);
         }
-    }
 
-    private string FindScriptAssetPath(string typeName)
+        return data;
+    }
+    #endregion
+
+    #region Json Creation
+    private string CreateConfigurationJson(string bundleName, List<PhysicsBoneData> boneData)
     {
-        // Look for the script file in project
-        string[] scriptFiles = AssetDatabase.FindAssets($"t:Script {typeName}");
-
-        if (scriptFiles.Length > 0)
+        var config = new
         {
-            // Get the first match
-            string assetPath = AssetDatabase.GUIDToAssetPath(scriptFiles[0]);
-            return assetPath;
+            bundleName = bundleName,
+            boneData = boneData,
+            // TODO: Add more data
+        };
+
+        return JsonConvert.SerializeObject(config, Formatting.Indented);
+    }
+    #endregion
+
+    #region Helper Methods
+    private Bounds GetModelBounds(GameObject model)
+    {
+        Renderer[] renderers = model.GetComponentsInChildren<Renderer>();
+        if (renderers.Length == 0) return new Bounds();
+
+        Bounds bounds = renderers[0].bounds;
+        for (int i = 1; i < renderers.Length; i++)
+        {
+            bounds.Encapsulate(renderers[i].bounds);
         }
 
-        return null;
+        return bounds;
     }
+    #endregion
 }
