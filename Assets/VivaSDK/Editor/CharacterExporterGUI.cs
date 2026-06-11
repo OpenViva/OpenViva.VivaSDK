@@ -1,26 +1,26 @@
 using UnityEditor;
 using UnityEngine;
 
-public static class CharacterExporterGUI
+public class CharacterExporterGUI : MonoBehaviour
 {
     public static void DrawExportWindow(CharacterExporter exporter)
     {
-        GUILayout.Label("Character Exporter", EditorStyles.boldLabel);
+        GUILayout.Label("Export Character (.viva + .bundle)", EditorStyles.boldLabel);
 
         EditorGUILayout.Space();
 
-        exporter.prefabToExport = (GameObject)EditorGUILayout.ObjectField(
-            "Character Prefab",
-            exporter.prefabToExport, typeof(GameObject), true);
+        EditorGUILayout.HelpBox(
+            "Viva Format Usage\n" +
+            "Exported characters will be turned into a pair of .viva and .bundle files containing script metadata and models.\n" +
+            "Only whitelisted scripts will be exported!",
+            MessageType.Info
+        );
 
         EditorGUILayout.Space();
 
-        // Bundle Name
-        exporter.bundleName = EditorGUILayout.TextField("Name", exporter.bundleName);
+        exporter.prefabToExport = (GameObject)EditorGUILayout.ObjectField("Your Chracter", exporter.prefabToExport, typeof(GameObject), true);
+        exporter.bundleName = EditorGUILayout.TextField("Character File Name", exporter.bundleName);
 
-        EditorGUILayout.Space();
-
-        // Export Button
         GUI.enabled = exporter.prefabToExport != null && !string.IsNullOrEmpty(exporter.bundleName);
         if (GUILayout.Button("Export"))
         {
