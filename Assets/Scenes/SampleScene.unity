@@ -670,8 +670,35 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 275792089179159575, guid: 0ab12174e25841b49977d91d7f52e2c4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6825532437796173614}
   m_SourcePrefab: {fileID: 100100000, guid: 0ab12174e25841b49977d91d7f52e2c4, type: 3}
+--- !u!1 &6825532437796173613 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 275792089179159575, guid: 0ab12174e25841b49977d91d7f52e2c4, type: 3}
+  m_PrefabInstance: {fileID: 6825532437796173612}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6825532437796173614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6825532437796173613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc4c2e62aebf24b4baf1aa6d03a79a5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VivaDescriptor
+  Name: Fox Girl #9000
+  AuthorName: Unknown
+  Version: 1
+  PersonalityType: 0
+  Description: Return to hot spring when found.
+  Tags: fox, girl
+  CustomColor: {r: 1, g: 0.6470588, b: 0, a: 1}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
