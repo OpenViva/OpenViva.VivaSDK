@@ -13,9 +13,35 @@ public class CharacterExporter : EditorWindow
     [MenuItem("VivaSDK/Character Exporter")]
     public static void ShowWindow()
     {
-        GetWindow<CharacterExporter>("Character Exporter");
+        GetWindow<CharacterExporter>("VivaSDK Character Exporter");
     }
 
+    #region Auto Selection
+    private void OnEnable()
+    {
+        AutoSelectSceneObject();
+    }
+
+    private void AutoSelectSceneObject()
+    {
+        GameObject selectedObject = Selection.activeGameObject;
+
+        if (selectedObject != null)
+        {
+            return;
+        }
+
+        bool hasDescriptor = selectedObject.GetComponent<VivaDescriptor>() != null;
+
+        if (hasDescriptor)
+        {
+            prefabToExport = selectedObject;
+            bundleName = selectedObject.name;
+        }
+    }
+    #endregion
+
+    #region GUI
     private void OnGUI()
     {
         CharacterExporterGUI.DrawExportWindow(this);
@@ -25,6 +51,7 @@ public class CharacterExporter : EditorWindow
     {
         ExportVivaCharacter();
     }
+    #endregion
 
     private void ExportVivaCharacter()
     {
@@ -97,6 +124,14 @@ public class CharacterExporter : EditorWindow
             return;
         }
 
+        // Collect script metadata
+        var metadata = new VivaMetadata();
+        CollectScriptMetadata(prefabToExport, metadata);
+
+        // Create .viva file
+        string vivaFilePath = Path.Combine(exportFolder, bundleName + ".viva");
+        CreateVivaFile(bundlePath, metadata, vivaFilePath);
+
         // Cleanup
         if (isSceneObject && File.Exists(assetPath))
         {
@@ -106,9 +141,10 @@ public class CharacterExporter : EditorWindow
         if (Directory.Exists(tempBuildPath)) Directory.Delete(tempBuildPath, true);
 
         EditorUtility.RevealInFinder(exportFolder);
-        Debug.Log($"[Character Exporter] Exported to: {Path.GetFullPath(exportFolder)}");
+        Debug.Log($"[Character Exporter] Exported to: {Path.GetFullPath(vivaFilePath)}");
     }
 
+    #region Data Collection
     private void CollectComponentFileReferences(GameObject rootObject, HashSet<string> dependencies, string exportFolder)
     {
         foreach (Component component in rootObject.GetComponentsInChildren<Component>(true))
@@ -148,6 +184,7 @@ public class CharacterExporter : EditorWindow
             }
         }
     }
+    #endregion
 
     private void CreateVivaFile(string bundlePath, VivaMetadata metadata, string vivaFilePath)
     {
