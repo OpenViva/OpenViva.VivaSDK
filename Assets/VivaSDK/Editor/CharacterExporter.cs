@@ -84,6 +84,19 @@ public class CharacterExporter : EditorWindow
         BuildPipeline.BuildAssetBundles(tempBuildPath, new[] { build },
             BuildAssetBundleOptions.ChunkBasedCompression, EditorUserBuildSettings.activeBuildTarget);
 
+        string builtFilePath = Path.Combine(tempBuildPath, bundleName);
+        string bundlePath = Path.Combine(exportFolder, bundleName + ".bundle");
+
+        if (File.Exists(builtFilePath))
+        {
+            File.Copy(builtFilePath, bundlePath, true);
+        }
+        else
+        {
+            Debug.LogError("[Viva Exporter] Export failed: .bundle file not found.");
+            return;
+        }
+
         // Cleanup
         if (isSceneObject && File.Exists(assetPath))
         {
