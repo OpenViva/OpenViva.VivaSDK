@@ -84,6 +84,14 @@ public class CharacterExporter : EditorWindow
         BuildPipeline.BuildAssetBundles(tempBuildPath, new[] { build },
             BuildAssetBundleOptions.ChunkBasedCompression, EditorUserBuildSettings.activeBuildTarget);
 
+        // Cleanup
+        if (isSceneObject && File.Exists(assetPath))
+        {
+            AssetDatabase.DeleteAsset(assetPath);
+        }
+
+        if (Directory.Exists(tempBuildPath)) Directory.Delete(tempBuildPath, true);
+
         EditorUtility.RevealInFinder(exportFolder);
         Debug.Log($"[Character Exporter] Exported to: {Path.GetFullPath(exportFolder)}");
     }
@@ -109,6 +117,49 @@ public class CharacterExporter : EditorWindow
                 }
             }
         }
+    }
+
+    private void CollectScriptMetadata(GameObject rootObject, VivaMetadata metadata)
+    {
+        foreach (var component in rootObject.GetComponentsInChildren<Component>(true))
+        {
+            if (component == null) continue;
+
+            // Skip components not in whitelist
+            if (!VivaScriptSanitizer.IsScriptAllowed(component.GetType())) continue;
+
+            var serializedData = SerializeComponent(component);
+            if (serializedData != null)
+            {
+                metadata.AddScriptData(component.GetType().FullName, component.gameObject, serializedData);
+            }
+        }
+    }
+
+    private void CreateVivaFile(string bundlePath, VivaMetadata metadata, string vivaFilePath)
+    {
+        byte[] bundleData = File.ReadAllBytes(bundlePath);
+        byte[] metadataData = metadata.Serialize();
+
+        using var stream = new FileStream(vivaFilePath, FileMode.Create, FileAccess.Write);
+        using var writer = new BinaryWriter(stream);
+        VivaFormat.Header header = new()
+        {
+            VivaHeader = VivaFormat.VivaBytes,
+            Version = VivaFormat.CurrentVersion,
+            BundleSize = bundleData.Length,
+            MetadataSize = metadataData.Length,
+            ScriptCount = metadata.Scripts.Count,
+            Checksum = VivaFormat.CalculateChecksum(bundleData)
+        };
+
+        VivaFormat.WriteHeader(writer, header);
+
+        // Write bundle data
+        writer.Write(bundleData);
+
+        // Write metadata
+        writer.Write(metadataData);
     }
 
     private byte[] SerializeComponent(Component component)
