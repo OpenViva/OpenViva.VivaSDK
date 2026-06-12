@@ -1,7 +1,7 @@
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,46 +10,12 @@ public class CharacterExporter : EditorWindow
     public GameObject prefabToExport;
     public string bundleName = "char";
 
-    // List of scripts to include in export
-    private static readonly List<string> scriptsToInclude = new()
-    {
-        "PhysicsBone",
-        "ColliderReference",
-        "CharacterInfo"
-    };
-
-    [MenuItem("VivaSDK/Export Character")]
+    [MenuItem("VivaSDK/Character Exporter")]
     public static void ShowWindow()
     {
-        GetWindow<CharacterExporter>("VivaSDK Exporter");
+        GetWindow<CharacterExporter>("Character Exporter");
     }
 
-    #region Auto Selection
-    private void OnEnable()
-    {
-        AutoSelectSceneObject();
-    }
-
-    private void AutoSelectSceneObject()
-    {
-        GameObject selectedObject = Selection.activeGameObject;
-
-        if (selectedObject == null)
-        {
-            return;
-        }
-
-        bool hasAnimator = selectedObject.GetComponent<Animator>() != null;
-
-        if (hasAnimator)
-        {
-            prefabToExport = selectedObject;
-            bundleName = selectedObject.name;
-        }
-    }
-    #endregion
-
-    #region GUI
     private void OnGUI()
     {
         CharacterExporterGUI.DrawExportWindow(this);
@@ -57,184 +23,105 @@ public class CharacterExporter : EditorWindow
 
     public void OnExportClicked()
     {
-        ExportAssetBundle();
+        ExportVivaCharacter();
     }
-    #endregion
 
-    private void ExportAssetBundle()
+    private void ExportVivaCharacter()
     {
         if (prefabToExport == null)
         {
-            Debug.LogError("[VivaSDK] No prefab selected!");
+            Debug.LogError("[Viva Exporter] No object assigned.");
+            return;
         }
 
-        string exportFolder = "Assets/CharacterExports";
+        if (string.IsNullOrEmpty(bundleName))
+        {
+            Debug.LogError("[Viva Exporter] Model name cannot be empty.");
+            return;
+        }
+
+        // Sanitize scripts before export
+        if (!VivaScriptSanitizer.ValidateAllScripts(prefabToExport))
+        {
+            Debug.LogError("[Viva Exporter] Script sanitization failed. Export aborted.");
+            return;
+        }
+
+        string exportFolder = "Assets/Character Exports";
         if (!Directory.Exists(exportFolder))
-        {
             Directory.CreateDirectory(exportFolder);
-        }
 
-        string tempExportFolder = "TempBundles";
-        if (!Directory.Exists(tempExportFolder))
-        {
-            Directory.CreateDirectory(tempExportFolder);
-        }
+        string tempBuildPath = "TempBundleBuild";
+        if (!Directory.Exists(tempBuildPath))
+            Directory.CreateDirectory(tempBuildPath);
 
+        // Find if the object is a prefab already
         string assetPath = AssetDatabase.GetAssetPath(prefabToExport);
         bool isSceneObject = string.IsNullOrEmpty(assetPath);
 
         if (isSceneObject)
         {
-            string tempPrefabPath = "Assets/__TempExport.prefab";
+            string tempPrefabPath = "Assets/__TempPrefab.prefab";
             PrefabUtility.SaveAsPrefabAsset(prefabToExport, tempPrefabPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             assetPath = tempPrefabPath;
         }
 
-        // Get all dependencies
-        var allDependencies = new HashSet<string>(
-            AssetDatabase.GetDependencies(assetPath, true)
-            .Where(path => !string.IsNullOrEmpty(path) && !path.EndsWith(".cs"))
-        );
+        // Collect dependencies
+        HashSet<string> allDependencies = (HashSet<string>)new HashSet<string>(AssetDatabase.GetDependencies(assetPath, true))
+            .Where(path => !string.IsNullOrEmpty(path) && !path.EndsWith(".cs"));
 
-        // Create the build configuration
+        // Collect component file references
+        CollectComponentFileReferences(prefabToExport, allDependencies, exportFolder);
+
         AssetBundleBuild build = new()
         {
             assetBundleName = bundleName,
-            assetNames = allDependencies.ToArray()
+            assetNames = allDependencies.ToArray(),
         };
 
-        // Build the AssetBundle
-        BuildAssetBundlesParameters buildParams = new()
+        BuildPipeline.BuildAssetBundles(tempBuildPath, new[] { build },
+            BuildAssetBundleOptions.ChunkBasedCompression, EditorUserBuildSettings.activeBuildTarget);
+
+        EditorUtility.RevealInFinder(exportFolder);
+        Debug.Log($"[Character Exporter] Exported to: {Path.GetFullPath(exportFolder)}");
+    }
+
+    private void CollectComponentFileReferences(GameObject rootObject, HashSet<string> dependencies, string exportFolder)
+    {
+        foreach (Component component in rootObject.GetComponentsInChildren<Component>(true))
         {
-            outputPath = tempExportFolder,
-            options = BuildAssetBundleOptions.ChunkBasedCompression | BuildAssetBundleOptions.ForceRebuildAssetBundle,
-            bundleDefinitions = new[] { build }
-        };
+            if (component == null) continue;
 
-        AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(buildParams);
-
-        if (manifest == null)
-        {
-            Debug.LogError("[VivaSDK] AssetBundle build failed. Check console for details.");
-            return;
-        }
-
-        // --- Json Building Below ---
-        List<PhysicsBoneData> physicsBones = CollectPhysicsBoneData(prefabToExport);
-        // TODO: Add Collider reference data
-
-        // TODO: Create Thumbnail for export
-
-        string configJson = CreateConfigurationJson(bundleName, physicsBones);
-
-        // Where to export and the custom file format
-        string packagePath = Path.Combine(exportFolder, bundleName + ".viva");
-
-        using (FileStream fs = new(packagePath, FileMode.Create))
-        using (BinaryWriter writer = new(fs))
-        {
-            // Write "VIVA" in HEX first
-            writer.Write(0x56); // V
-            writer.Write(0x49); // I
-            writer.Write(0x56); // V
-            writer.Write(0x41); // A
-
-            // Write bundle name
-            writer.Write(bundleName);
-
-            // Write JSON config
-            byte[] configBytes = System.Text.Encoding.UTF8.GetBytes(configJson);
-            writer.Write(configBytes.Length); // Write length so it can be read back inside the game
-            writer.Write(configBytes);
-
-            // TODO: Write Thumbnail
-
-            // Write bundle data
-            string bundleFilePath = Path.Combine(tempExportFolder, bundleName);
-            if (File.Exists(bundleFilePath))
+            var fields = component.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            foreach (FieldInfo field in fields)
             {
-                byte[] bundleBytes = File.ReadAllBytes(bundleFilePath);
-                writer.Write(bundleBytes.Length);
-                writer.Write(bundleBytes);
+                if (!typeof(Object).IsAssignableFrom(field.FieldType)) continue;
+
+                Object value = field.GetValue(component) as Object;
+                if (value == null) continue;
+
+                string fieldPath = AssetDatabase.GetAssetPath(value);
+                if (!string.IsNullOrEmpty(fieldPath) && fieldPath.StartsWith("Assets"))
+                {
+                    dependencies.Add(fieldPath);
+                }
             }
         }
-
-        // Clean temp files
-        if (isSceneObject && File.Exists(assetPath))
-        {
-            AssetDatabase.DeleteAsset(assetPath);
-        }
-
-        if (Directory.Exists(tempExportFolder))
-        {
-            Directory.Delete(tempExportFolder, true);
-        }
-
-        Debug.Log($"[VivaSDK] Character exported to: {Path.GetFullPath(packagePath)}");
-        EditorUtility.RevealInFinder(exportFolder);
     }
 
-    #region Data Collection
-    private List<PhysicsBoneData> CollectPhysicsBoneData(GameObject root)
+    private byte[] SerializeComponent(Component component)
     {
-        var data = new List<PhysicsBoneData>();
-
-        foreach (var bone in root.GetComponentsInChildren<PhysicsBone>(true))
+        try
         {
-            if (bone == null) continue;
-
-            PhysicsBoneData boneData = new()
-            {
-                boneName = bone.boneName,
-                preset = bone.preset.ToString(),
-                gravity = bone.gravity,
-                damping = bone.damping,
-                distanceCompression = bone.distanceCompression,
-                stiffnessValue = bone.stiffnessValue,
-                useStiffnessCurve = bone.useStiffnessCurve,
-                stiffnessCurveStart = bone.stiffnessCurveStart,
-                stiffnessCurveEnd = bone.stiffnessCurveEnd,
-                velocityAttenuation = bone.velocityAttenuation,
-                useLimit = bone.useLimit,
-                speedLimit = bone.speedLimit
-            };
-
-            data.Add(boneData);
+            string json = JsonUtility.ToJson(component, true);
+            return System.Text.Encoding.UTF8.GetBytes(json);
         }
-
-        return data;
-    }
-    #endregion
-
-    #region Json Creation
-    private string CreateConfigurationJson(string bundleName, List<PhysicsBoneData> boneData)
-    {
-        var config = new
+        catch (System.Exception ex)
         {
-            bundleName = bundleName,
-            boneData = boneData,
-            // TODO: Add more data
-        };
-
-        return JsonConvert.SerializeObject(config, Formatting.Indented);
-    }
-    #endregion
-
-    #region Helper Methods
-    private Bounds GetModelBounds(GameObject model)
-    {
-        Renderer[] renderers = model.GetComponentsInChildren<Renderer>();
-        if (renderers.Length == 0) return new Bounds();
-
-        Bounds bounds = renderers[0].bounds;
-        for (int i = 1; i < renderers.Length; i++)
-        {
-            bounds.Encapsulate(renderers[i].bounds);
+            Debug.LogError($"[Viva Exporter] Failed to serialize component: {ex.Message}");
+            return null;
         }
-
-        return bounds;
     }
-    #endregion
 }
