@@ -26,7 +26,7 @@ public class CharacterExporter : EditorWindow
     {
         GameObject selectedObject = Selection.activeGameObject;
 
-        if (selectedObject != null)
+        if (selectedObject == null)
         {
             return;
         }
@@ -96,8 +96,8 @@ public class CharacterExporter : EditorWindow
         }
 
         // Collect dependencies
-        HashSet<string> allDependencies = (HashSet<string>)new HashSet<string>(AssetDatabase.GetDependencies(assetPath, true))
-            .Where(path => !string.IsNullOrEmpty(path) && !path.EndsWith(".cs"));
+        var allDependencies = new HashSet<string>(AssetDatabase.GetDependencies(assetPath, true)
+            .Where(path => !string.IsNullOrEmpty(path) && !path.EndsWith(".cs")));
 
         // Collect component file references
         CollectComponentFileReferences(prefabToExport, allDependencies, exportFolder);
