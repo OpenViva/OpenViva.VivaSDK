@@ -74,6 +74,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3783169323036230559}
   - component: {fileID: 1517499486257670476}
+  - component: {fileID: 4994111419094845060}
   m_Layer: 0
   m_Name: Erin Ready
   m_TagString: Untagged
@@ -131,6 +132,25 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &4994111419094845060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 275792089179159575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc4c2e62aebf24b4baf1aa6d03a79a5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VivaDescriptor
+  Name: Fox Girl #9000
+  AuthorName: OpenViva
+  Version: 1
+  PersonalityType: 0
+  Description: Return to hot spring when found.
+  Tags: fox, girl
+  CustomColor: {r: 1, g: 0.6470588, b: 0, a: 1}
 --- !u!1 &390102876022694963
 GameObject:
   m_ObjectHideFlags: 0
