@@ -10,7 +10,7 @@ public static class VivaFormat
 
     public struct Header
     {
-        public string VivaHeader;
+        public string VivaKey;
         public int Version;
         public long BundleSize;
         public long MetadataSize;
@@ -28,7 +28,7 @@ public static class VivaFormat
 
     public static void WriteHeader(BinaryWriter writer, Header header)
     {
-        writer.Write(header.VivaHeader);
+        writer.Write(header.VivaKey);
         writer.Write(header.Version);
         writer.Write(header.BundleSize);
         writer.Write(header.MetadataSize);
@@ -40,7 +40,7 @@ public static class VivaFormat
     {
         Header header = new()
         {
-            VivaHeader = reader.ReadString(),
+            VivaKey = reader.ReadString(),
             Version = reader.ReadInt32(),
             BundleSize = reader.ReadInt64(),
             MetadataSize = reader.ReadInt64(),

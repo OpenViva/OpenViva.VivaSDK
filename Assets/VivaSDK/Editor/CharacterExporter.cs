@@ -195,7 +195,7 @@ public class CharacterExporter : EditorWindow
         using var writer = new BinaryWriter(stream);
         VivaFormat.Header header = new()
         {
-            VivaHeader = VivaFormat.VivaBytes,
+            VivaKey = VivaFormat.VivaBytes,
             Version = VivaFormat.CurrentVersion,
             BundleSize = bundleData.Length,
             MetadataSize = metadataData.Length,
