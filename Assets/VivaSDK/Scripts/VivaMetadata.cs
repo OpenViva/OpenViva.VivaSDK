@@ -48,16 +48,16 @@ public class VivaMetadata
             return "";
         }
 
-        string path = gameObject.name;
-        Transform parent = gameObject.transform.parent;
+        List<string> pathParts = new();
+        Transform current = gameObject.transform;
 
-        while (parent != null)
+        while (current != null)
         {
-            path = path + "/" + parent.name;
-            parent = parent.parent;
+            pathParts.Insert(0, current.name);
+            current = current.parent;
         }
 
-        return path;
+        return string.Join("/", pathParts);
     }
 
     public byte[] Serialize()
