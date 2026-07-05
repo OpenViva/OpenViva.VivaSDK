@@ -126,6 +126,7 @@ public class CharacterExporter : EditorWindow
 
         // Collect script metadata
         var metadata = new VivaMetadata();
+        metadata.PrefabName = prefabToExport.name;
         CollectScriptMetadata(prefabToExport, metadata);
 
         // Create .viva file
