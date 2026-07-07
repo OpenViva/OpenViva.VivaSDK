@@ -74,6 +74,7 @@ public class CharacterExporter : EditorWindow
             return;
         }
 
+        // Prepare export folders
         string exportFolder = "Assets/Character Exports";
         if (!Directory.Exists(exportFolder))
             Directory.CreateDirectory(exportFolder);
@@ -127,6 +128,7 @@ public class CharacterExporter : EditorWindow
         // Collect script metadata
         var metadata = new VivaMetadata();
         metadata.PrefabName = prefabToExport.name;
+        metadata.Version = VivaFormat.CurrentVersion;
         CollectScriptMetadata(prefabToExport, metadata);
 
         // Create .viva file
