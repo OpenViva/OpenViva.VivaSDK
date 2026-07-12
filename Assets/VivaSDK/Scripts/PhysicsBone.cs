@@ -4,6 +4,10 @@ public class PhysicsBone : MonoBehaviour
 {
     [Header("Bone Configuration")]
     public Transform boneTransform;
+
+    [HideInInspector]  // We will fill this during export
+    public string bonePath;   // ← This will store the full path
+
     public string boneName;
 
     // Preset System
@@ -44,6 +48,8 @@ public class PhysicsBone : MonoBehaviour
         if (boneTransform != null)
         {
             boneName = boneTransform.name;
+
+            bonePath = GetTransformPath(boneTransform);
         }
 
         // Auto-configure values based on preset
@@ -80,6 +86,25 @@ public class PhysicsBone : MonoBehaviour
                 stiffnessValue = 0.35f;
                 break;
         }
+    }
+
+    private string GetTransformPath(Transform target)
+    {
+        if (target == null)
+        {
+            return "";
+        }
+
+        string path = target.name;
+        Transform current = target.parent;
+
+        while (current != null)
+        {
+            path = current.name + "/" + path;
+            current = current.parent;
+        }
+
+        return path;
     }
 
     private void OnDrawGizmosSelected()
