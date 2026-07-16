@@ -627,6 +627,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Erin Ready
       objectReference: {fileID: 0}
+    - target: {fileID: 275792089179159575, guid: 0ab12174e25841b49977d91d7f52e2c4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3783169323036230559, guid: 0ab12174e25841b49977d91d7f52e2c4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -666,6 +670,14 @@ PrefabInstance:
     - target: {fileID: 3783169323036230559, guid: 0ab12174e25841b49977d91d7f52e2c4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8201494771751812735, guid: 0ab12174e25841b49977d91d7f52e2c4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8201494771751812735, guid: 0ab12174e25841b49977d91d7f52e2c4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -170.004
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
