@@ -6,7 +6,7 @@ public class PhysicsBone : MonoBehaviour
     public Transform boneTransform;
 
     [HideInInspector]  // We will fill this during export
-    public string bonePath;   // ← This will store the full path
+    public string bonePath;   // Store the root bone path
 
     public string boneName;
 
@@ -48,7 +48,6 @@ public class PhysicsBone : MonoBehaviour
         if (boneTransform != null)
         {
             boneName = boneTransform.name;
-
             bonePath = GetTransformPath(boneTransform);
         }
 
@@ -88,7 +87,7 @@ public class PhysicsBone : MonoBehaviour
         }
     }
 
-    private string GetTransformPath(Transform target)
+    public static string GetTransformPath(Transform target)
     {
         if (target == null)
         {
@@ -98,6 +97,7 @@ public class PhysicsBone : MonoBehaviour
         string path = target.name;
         Transform current = target.parent;
 
+        // Add transform names to the path until the transform is empty
         while (current != null)
         {
             path = current.name + "/" + path;
