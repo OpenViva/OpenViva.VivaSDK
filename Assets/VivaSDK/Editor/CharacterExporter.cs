@@ -139,7 +139,9 @@ public class CharacterExporter : EditorWindow
 
         CollectCharacterData(prefabToExport, characterData);
 
-        Debug.Log($"------------------ {characterData}");
+        // TODO: Remove scripts from prefab before exporting to avoid loose script at runtime
+
+        Debug.Log($"------------------ {characterData.ToString()}");
 
         string json = JsonUtility.ToJson(characterData, true);
         byte[] characterDataBytes = System.Text.Encoding.UTF8.GetBytes(json);
