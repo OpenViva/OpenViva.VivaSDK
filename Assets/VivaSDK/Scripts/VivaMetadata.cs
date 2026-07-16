@@ -6,9 +6,17 @@ using UnityEngine;
 [Serializable]
 public class VivaMetadata
 {
-    public int Version = 1;
+    public int Version = 2;
     public string PrefabName;
+
+    // Generic script data
     public List<ScriptData> Scripts = new();
+
+    // Data-driven components
+    public List<PhysicsBoneData> PhysicsBones = new();
+
+    // Add more lists here in the future
+    // public List<VivaDescriptor> VivaDescriptor = new();
 
     [Serializable]
     public class ScriptData
