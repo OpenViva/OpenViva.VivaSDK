@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using static VivaFormat;
 
 public class CharacterExporter : EditorWindow
 {
@@ -101,7 +101,7 @@ public class CharacterExporter : EditorWindow
             .Where(path => !string.IsNullOrEmpty(path) && !path.EndsWith(".cs")));
 
         // Collect component file references
-        CollectComponentFileReferences(prefabToExport, allDependencies, exportFolder);
+        //CollectComponentFileReferences(prefabToExport, allDependencies, exportFolder);
 
         AssetBundleBuild build = new()
         {
@@ -110,14 +110,17 @@ public class CharacterExporter : EditorWindow
         };
 
         BuildPipeline.BuildAssetBundles(tempBuildPath, new[] { build },
-            BuildAssetBundleOptions.ChunkBasedCompression, EditorUserBuildSettings.activeBuildTarget);
+            BuildAssetBundleOptions.ChunkBasedCompression, 
+            EditorUserBuildSettings.activeBuildTarget);
+
+        Debug.Log($"--- Build target: {EditorUserBuildSettings.activeBuildTarget}");
 
         string builtFilePath = Path.Combine(tempBuildPath, bundleName);
-        string bundlePath = Path.Combine(exportFolder, bundleName + ".bundle");
+        string finalBundlePath = Path.Combine(exportFolder, bundleName + ".bundle");
 
         if (File.Exists(builtFilePath))
         {
-            File.Copy(builtFilePath, bundlePath, true);
+            File.Copy(builtFilePath, finalBundlePath, true);
         }
         else
         {
@@ -125,15 +128,25 @@ public class CharacterExporter : EditorWindow
             return;
         }
 
-        // Collect script metadata
-        var metadata = new VivaMetadata();
-        metadata.PrefabName = prefabToExport.name;
-        metadata.Version = VivaFormat.CurrentVersion;
-        CollectScriptMetadata(prefabToExport, metadata);
+        // Collect character data
+        VivaCharacterData characterData = new()
+        {
+            Version = VivaFormat.CurrentVersion,
+            CharacterName = bundleName,
+            PrefabName = prefabToExport.name,
+            ScriptCount = 0,
+        };
+
+        CollectCharacterData(prefabToExport, characterData);
+
+        Debug.Log($"------------------ {characterData}");
+
+        string json = JsonUtility.ToJson(characterData, true);
+        byte[] characterDataBytes = System.Text.Encoding.UTF8.GetBytes(json);
 
         // Create .viva file
         string vivaFilePath = Path.Combine(exportFolder, bundleName + ".viva");
-        CreateVivaFile(bundlePath, metadata, vivaFilePath);
+        CreateVivaFile(vivaFilePath, finalBundlePath, characterDataBytes, characterData.ScriptCount);
 
         // Cleanup
         if (isSceneObject && File.Exists(assetPath))
@@ -141,91 +154,117 @@ public class CharacterExporter : EditorWindow
             AssetDatabase.DeleteAsset(assetPath);
         }
 
-        if (Directory.Exists(tempBuildPath)) Directory.Delete(tempBuildPath, true);
+        if (Directory.Exists(tempBuildPath))
+        {
+            Directory.Delete(tempBuildPath, true);
+        }
 
         EditorUtility.RevealInFinder(exportFolder);
         Debug.Log($"[Character Exporter] Exported to: {Path.GetFullPath(vivaFilePath)}");
     }
 
     #region Data Collection
-    private void CollectComponentFileReferences(GameObject rootObject, HashSet<string> dependencies, string exportFolder)
+    private void CollectCharacterData(GameObject root, VivaCharacterData data)
     {
-        foreach (Component component in rootObject.GetComponentsInChildren<Component>(true))
+        if (root.TryGetComponent<VivaDescriptor>(out var descriptor))
         {
-            if (component == null) continue;
-
-            var fields = component.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-            foreach (FieldInfo field in fields)
+            data.Info = new CharacterInfo
             {
-                if (!typeof(Object).IsAssignableFrom(field.FieldType)) continue;
+                Name = descriptor.Name,
+                AuthorName = descriptor.AuthorName,
+                Version = descriptor.Version,
+                PersonalityType = descriptor.PersonalityType,
+                VoicePack = descriptor.VoicePack,
+                Description = descriptor.Description,
+                Tags = descriptor.Tags,
+                CustomColor = descriptor.CustomColor,
+                Aux1 = descriptor.Aux1,
+                Aux2 = descriptor.Aux2,
+                Aux3 = descriptor.Aux3,
+                AuxString1 = descriptor.AuxString1,
+                AuxString2 = descriptor.AuxString2,
+                AuxString3 = descriptor.AuxString3,
+            };
 
-                Object value = field.GetValue(component) as Object;
-                if (value == null) continue;
+            data.ScriptCount++;
+        }
+        else
+        {
+            Debug.LogWarning("[Character Exporter] No VivaDescriptor found on character!");
+        }
 
-                string fieldPath = AssetDatabase.GetAssetPath(value);
-                if (!string.IsNullOrEmpty(fieldPath) && fieldPath.StartsWith("Assets"))
+        foreach (Component component in root.GetComponentsInChildren<Component>(true))
+        {
+            if (component is PhysicsBone pb)
+            {
+                PhysicsBoneData boneData = new()
                 {
-                    dependencies.Add(fieldPath);
-                }
+                    GameObjectPath = GenerateGameObjectPath(component.gameObject, root),
+                    BonePath = PhysicsBone.GetTransformPath(pb.boneTransform),
+                    BoneName = pb.boneName,
+                    Gravity = pb.gravity,
+                    Damping = pb.damping,
+                    DistanceCompression = pb.distanceCompression,
+                    StiffnessValue = pb.stiffnessValue,
+                    UseStiffnessCurve = pb.useStiffnessCurve,
+                    StiffnessCurveStart = pb.stiffnessCurveStart,
+                    StiffnessCurveEnd = pb.stiffnessCurveEnd,
+                    VelocityAttenuation = pb.velocityAttenuation,
+                    UseLimit = pb.useLimit,
+                    SpeedLimit = pb.speedLimit,
+
+                    // TODO: Add more variables
+                };
+
+                data.PhysicsBones.Add(boneData);
+                data.ScriptCount++;
             }
+
+            // TODO: Add more components here
         }
     }
 
-    private void CollectScriptMetadata(GameObject rootObject, VivaMetadata metadata)
+    private string GenerateGameObjectPath(GameObject obj, GameObject root)
     {
-        foreach (var component in rootObject.GetComponentsInChildren<Component>(true))
+        if (obj == root) return root.name;
+
+        List<string> parts = new();
+        Transform current = obj.transform;
+
+        while (current != null)
         {
-            if (component == null) continue;
-
-            // Skip components not in whitelist
-            if (!VivaScriptSanitizer.IsScriptAllowed(component.GetType())) continue;
-
-            var serializedData = SerializeComponent(component);
-            if (serializedData != null)
-            {
-                metadata.AddScriptData(component.GetType().FullName, component.gameObject, serializedData);
-            }
+            parts.Insert(0, current.name);
+            if (current.gameObject == root) break;
+            current = current.parent;
         }
+
+        return string.Join("/", parts);
     }
     #endregion
 
-    private void CreateVivaFile(string bundlePath, VivaMetadata metadata, string vivaFilePath)
+    private void CreateVivaFile(string vivaFilePath, string bundlePath, byte[] characterDataBytes, int scriptCount)
     {
         byte[] bundleData = File.ReadAllBytes(bundlePath);
-        byte[] metadataData = metadata.Serialize();
 
         using var stream = new FileStream(vivaFilePath, FileMode.Create, FileAccess.Write);
         using var writer = new BinaryWriter(stream);
-        VivaFormat.Header header = new()
+
+        var header = new VivaHeader
         {
             VivaKey = VivaFormat.VivaBytes,
             Version = VivaFormat.CurrentVersion,
             BundleSize = bundleData.Length,
-            MetadataSize = metadataData.Length,
-            ScriptCount = metadata.Scripts.Count,
+            CharacterDataSize = characterDataBytes.Length,
+            ScriptCount = scriptCount,
             Checksum = VivaFormat.CalculateChecksum(bundleData)
         };
 
         VivaFormat.WriteHeader(writer, header);
 
+        // Write character data
+        writer.Write(characterDataBytes);
+
         // Write bundle data
         writer.Write(bundleData);
-
-        // Write metadata
-        writer.Write(metadataData);
-    }
-
-    private byte[] SerializeComponent(Component component)
-    {
-        try
-        {
-            string json = JsonUtility.ToJson(component, true);
-            return System.Text.Encoding.UTF8.GetBytes(json);
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"[Viva Exporter] Failed to serialize component: {ex.Message}");
-            return null;
-        }
     }
 }
