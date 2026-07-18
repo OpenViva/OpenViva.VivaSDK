@@ -151,7 +151,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.toonshader": {
-      "version": "0.15.0-preview",
+      "version": "0.14.1-preview",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -175,6 +175,13 @@
       "source": "git",
       "dependencies": {},
       "hash": "59c42a126779f0153bcd304ffae4753ee19147d2"
+    },
+    "jp.lilxyzw.liltoon": {
+      "version": "https://github.com/lilxyzw/lilToon.git?path=Assets/lilToon#master",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "252fd8cfc46106d4967e95b3f2c788418502f227"
     },
     "org.khronos.unitygltf": {
       "version": "https://github.com/KhronosGroup/UnityGLTF.git",

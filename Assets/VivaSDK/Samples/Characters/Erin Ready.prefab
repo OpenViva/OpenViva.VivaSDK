@@ -148,9 +148,16 @@ MonoBehaviour:
   AuthorName: OpenViva
   Version: 1
   PersonalityType: 0
+  VoicePack: 0
   Description: Return to hot spring when found.
   Tags: fox, girl
   CustomColor: {r: 1, g: 0.6470588, b: 0, a: 1}
+  Aux1: 0
+  Aux2: 0
+  Aux3: 0
+  AuxString1: 
+  AuxString2: 
+  AuxString3: 
 --- !u!1 &390102876022694963
 GameObject:
   m_ObjectHideFlags: 0
@@ -304,7 +311,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: de296a1c52af9f34982040eaf7eff4ec, type: 2}
+  - {fileID: 2100000, guid: b6a1977f250283641bd41e4c1b04e14a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -708,6 +715,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhysicsBone
   boneTransform: {fileID: 2083429466428143467}
+  bonePath: Erin Ready/Armature/Hips/Spine/Chest/Upper Chest/Neck/Head/J_Sec_Hair1_16
   boneName: J_Sec_Hair1_16
   preset: 4
   gravity: 1.8
@@ -943,7 +951,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6c54c0851005f754883e36325821b6a6, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1517,6 +1525,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhysicsBone
   boneTransform: {fileID: 3312752572627845071}
+  bonePath: Erin Ready/Armature/Hips/J_Sec_Hair1_18
   boneName: J_Sec_Hair1_18
   preset: 3
   gravity: 2.5
@@ -2474,6 +2483,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhysicsBone
   boneTransform: {fileID: 7143502582875648895}
+  bonePath: Erin Ready/Armature/Hips/Spine/Chest/Upper Chest/Neck/Head/J_Sec_Hair1_17
   boneName: J_Sec_Hair1_17
   preset: 4
   gravity: 1.8
@@ -3058,7 +3068,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: de296a1c52af9f34982040eaf7eff4ec, type: 2}
+  - {fileID: 2100000, guid: b6a1977f250283641bd41e4c1b04e14a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3412,7 +3422,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: de296a1c52af9f34982040eaf7eff4ec, type: 2}
+  - {fileID: 2100000, guid: b6a1977f250283641bd41e4c1b04e14a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3607,7 +3617,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: de296a1c52af9f34982040eaf7eff4ec, type: 2}
+  - {fileID: 2100000, guid: b6a1977f250283641bd41e4c1b04e14a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4057,7 +4067,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: de296a1c52af9f34982040eaf7eff4ec, type: 2}
+  - {fileID: 2100000, guid: b6a1977f250283641bd41e4c1b04e14a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4316,7 +4326,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: de296a1c52af9f34982040eaf7eff4ec, type: 2}
+  - {fileID: 2100000, guid: b6a1977f250283641bd41e4c1b04e14a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4767,7 +4777,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8087056817997050296}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: -170.004}
 --- !u!1 &7725995708120314424
 GameObject:
   m_ObjectHideFlags: 0
@@ -5207,7 +5217,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: de296a1c52af9f34982040eaf7eff4ec, type: 2}
+  - {fileID: 2100000, guid: b6a1977f250283641bd41e4c1b04e14a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
