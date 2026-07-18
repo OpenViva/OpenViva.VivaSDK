@@ -74,6 +74,40 @@ public class CharacterExporter : EditorWindow
             return;
         }
 
+        // Step 1: Create a clean in-memory copy (does NOT affect scene)
+        GameObject tempCopy = Instantiate(prefabToExport);
+        tempCopy.name = prefabToExport.name + "_ExportCopy";
+
+        // Step 2: If it's a prefab instance, unpack only the copy
+        if (PrefabUtility.IsPartOfPrefabInstance(tempCopy))
+        {
+            Debug.Log("[Viva Exporter] Unpacking prefab instance on temporary copy...");
+            PrefabUtility.UnpackPrefabInstance(tempCopy, PrefabUnpackMode.OutermostRoot, InteractionMode.UserAction);
+        }
+
+        string tempPrefabPath = "Assets/__TempExportPrefab.prefab";
+        bool saveSuccess = PrefabUtility.SaveAsPrefabAsset(tempCopy, tempPrefabPath);
+
+        // Clean up the in-memory copy immediately
+        Destroy(tempCopy);
+
+        if (!saveSuccess)
+        {
+            Debug.LogError("[Viva Exporter] Failed to save temporary prefab with current changes!");
+            return;
+        }
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+
+        GameObject exportTarget = AssetDatabase.LoadAssetAtPath<GameObject>(tempPrefabPath);
+
+        if (exportTarget == null)
+        {
+            Debug.LogError("[Viva Exporter] Failed to load temporary prefab.");
+            return;
+        }
+
         // Prepare export folders
         string exportFolder = "Assets/Character Exports";
         if (!Directory.Exists(exportFolder))
@@ -83,25 +117,9 @@ public class CharacterExporter : EditorWindow
         if (!Directory.Exists(tempBuildPath))
             Directory.CreateDirectory(tempBuildPath);
 
-        // Find if the object is a prefab already
-        string assetPath = AssetDatabase.GetAssetPath(prefabToExport);
-        bool isSceneObject = string.IsNullOrEmpty(assetPath);
-
-        if (isSceneObject)
-        {
-            string tempPrefabPath = "Assets/__TempPrefab.prefab";
-            PrefabUtility.SaveAsPrefabAsset(prefabToExport, tempPrefabPath);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            assetPath = tempPrefabPath;
-        }
-
         // Collect dependencies
-        var allDependencies = new HashSet<string>(AssetDatabase.GetDependencies(assetPath, true)
+        var allDependencies = new HashSet<string>(AssetDatabase.GetDependencies(tempPrefabPath, true)
             .Where(path => !string.IsNullOrEmpty(path) && !path.EndsWith(".cs")));
-
-        // Collect component file references
-        //CollectComponentFileReferences(prefabToExport, allDependencies, exportFolder);
 
         AssetBundleBuild build = new()
         {
@@ -141,8 +159,6 @@ public class CharacterExporter : EditorWindow
 
         // TODO: Remove scripts from prefab before exporting to avoid loose script at runtime
 
-        Debug.Log($"------------------ {characterData.ToString()}");
-
         string json = JsonUtility.ToJson(characterData, true);
         byte[] characterDataBytes = System.Text.Encoding.UTF8.GetBytes(json);
 
@@ -151,9 +167,9 @@ public class CharacterExporter : EditorWindow
         CreateVivaFile(vivaFilePath, finalBundlePath, characterDataBytes, characterData.ScriptCount);
 
         // Cleanup
-        if (isSceneObject && File.Exists(assetPath))
+        if (File.Exists(tempPrefabPath))
         {
-            AssetDatabase.DeleteAsset(assetPath);
+            AssetDatabase.DeleteAsset(tempPrefabPath);
         }
 
         if (Directory.Exists(tempBuildPath))
@@ -161,8 +177,8 @@ public class CharacterExporter : EditorWindow
             Directory.Delete(tempBuildPath, true);
         }
 
-        EditorUtility.RevealInFinder(exportFolder);
-        Debug.Log($"[Character Exporter] Exported to: {Path.GetFullPath(vivaFilePath)}");
+        EditorUtility.RevealInFinder(vivaFilePath);
+        Debug.Log($"[Viva Exporter] Exported to: {Path.GetFullPath(vivaFilePath)}");
     }
 
     #region Data Collection
