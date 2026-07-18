@@ -74,22 +74,37 @@ public class CharacterExporter : EditorWindow
             return;
         }
 
-        // Step 1: Create a clean in-memory copy (does NOT affect scene)
+        // 1. Create an in-memory copy
         GameObject tempCopy = Instantiate(prefabToExport);
         tempCopy.name = prefabToExport.name + "_ExportCopy";
 
-        // Step 2: If it's a prefab instance, unpack only the copy
+        // 2. If it's a prefab instance unpack only the copy
         if (PrefabUtility.IsPartOfPrefabInstance(tempCopy))
         {
             Debug.Log("[Viva Exporter] Unpacking prefab instance on temporary copy...");
             PrefabUtility.UnpackPrefabInstance(tempCopy, PrefabUnpackMode.OutermostRoot, InteractionMode.UserAction);
         }
 
+        // 3. Collect character data
+        VivaCharacterData characterData = new()
+        {
+            Version = VivaFormat.CurrentVersion,
+            CharacterName = bundleName,
+            PrefabName = prefabToExport.name,
+            ScriptCount = 0,
+        };
+
+        CollectCharacterData(tempCopy, characterData);
+
+        // 4. Remove custom scripts from the copy (so they don't appear as Missing Scripts at runtime)
+        RemoveCustomScripts(tempCopy);
+
+        // 5. Save the clean copy as a prefab
         string tempPrefabPath = "Assets/__TempExportPrefab.prefab";
         bool saveSuccess = PrefabUtility.SaveAsPrefabAsset(tempCopy, tempPrefabPath);
 
-        // Clean up the in-memory copy immediately
-        Destroy(tempCopy);
+        // Clean up the in-memory copy
+        DestroyImmediate(tempCopy);
 
         if (!saveSuccess)
         {
@@ -145,17 +160,6 @@ public class CharacterExporter : EditorWindow
             Debug.LogError("[Viva Exporter] Export failed: .bundle file not found.");
             return;
         }
-
-        // Collect character data
-        VivaCharacterData characterData = new()
-        {
-            Version = VivaFormat.CurrentVersion,
-            CharacterName = bundleName,
-            PrefabName = prefabToExport.name,
-            ScriptCount = 0,
-        };
-
-        CollectCharacterData(prefabToExport, characterData);
 
         // TODO: Remove scripts from prefab before exporting to avoid loose script at runtime
 
@@ -259,6 +263,27 @@ public class CharacterExporter : EditorWindow
         return string.Join("/", parts);
     }
     #endregion
+
+    private void RemoveCustomScripts(GameObject root)
+    {
+        foreach (var component in root.GetComponentsInChildren<Component>(true))
+        {
+            if (component == null) continue;
+
+            System.Type type = component.GetType();
+
+            // Keep built in components
+            if (type.Namespace == null || !type.Namespace.StartsWith("UnityEngine"))
+            {
+                if (VivaScriptSanitizer.IsScriptAllowed(type) || 
+                    type == typeof(VivaDescriptor) || 
+                    type == typeof(PhysicsBone))
+                {
+                    DestroyImmediate(component);
+                }
+            }
+        }
+    }
 
     private void CreateVivaFile(string vivaFilePath, string bundlePath, byte[] characterDataBytes, int scriptCount)
     {
