@@ -74,6 +74,9 @@ public class CharacterExporter : EditorWindow
             return;
         }
 
+        // 0. Warm up shaders
+        Shader.WarmupAllShaders();
+
         // 1. Create an in-memory copy
         GameObject tempCopy = Instantiate(prefabToExport);
         tempCopy.name = prefabToExport.name + "_ExportCopy";
