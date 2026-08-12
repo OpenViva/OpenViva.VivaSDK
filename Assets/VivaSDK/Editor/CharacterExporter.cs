@@ -198,6 +198,7 @@ public class CharacterExporter : EditorWindow
                 Name = descriptor.Name,
                 AuthorName = descriptor.AuthorName,
                 Version = descriptor.Version,
+                HeadBonePath = GenerateGameObjectPath(descriptor.HeadBone.gameObject, root),
                 PersonalityType = descriptor.PersonalityType,
                 VoicePack = descriptor.VoicePack,
                 Description = descriptor.Description,
