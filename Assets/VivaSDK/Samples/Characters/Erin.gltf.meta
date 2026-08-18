@@ -7,12 +7,12 @@ ScriptedImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Atlas
-    second: {fileID: 2100000, guid: de296a1c52af9f34982040eaf7eff4ec, type: 2}
+    second: {fileID: 2100000, guid: b6a1977f250283641bd41e4c1b04e14a, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: face
-    second: {fileID: 2100000, guid: 6c54c0851005f754883e36325821b6a6, type: 2}
+    second: {fileID: 2100000, guid: 002cff6c21603f84e87ccc6969aa7ec3, type: 2}
   serializedVersion: 2
   userData: 
   assetBundleName: 
