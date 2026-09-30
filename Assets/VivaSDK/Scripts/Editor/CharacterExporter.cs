@@ -146,7 +146,7 @@ public class CharacterExporter : EditorWindow
         };
 
         BuildPipeline.BuildAssetBundles(tempBuildPath, new[] { build },
-            BuildAssetBundleOptions.ChunkBasedCompression, 
+            BuildAssetBundleOptions.ChunkBasedCompression,
             EditorUserBuildSettings.activeBuildTarget);
 
         Debug.Log($"--- Build target: {EditorUserBuildSettings.activeBuildTarget}");
@@ -279,8 +279,8 @@ public class CharacterExporter : EditorWindow
             // Keep built in components
             if (type.Namespace == null || !type.Namespace.StartsWith("UnityEngine"))
             {
-                if (VivaScriptSanitizer.IsScriptAllowed(type) || 
-                    type == typeof(VivaDescriptor) || 
+                if (VivaScriptSanitizer.IsScriptAllowed(type) ||
+                    type == typeof(VivaDescriptor) ||
                     type == typeof(PhysicsBone))
                 {
                     DestroyImmediate(component);
