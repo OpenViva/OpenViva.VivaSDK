@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class VivaPhysicsBone : MonoBehaviour
@@ -5,15 +6,16 @@ public class VivaPhysicsBone : MonoBehaviour
     [Header("Bone Configuration")]
     public Transform boneTransform;
 
-    [HideInInspector]  // We will fill this during export
-    public string bonePath;   // Store the root bone path
+    [HideInInspector]
+    public string bonePath;
 
     public string boneName;
 
-    // Preset System
+    [Header("Collision")]
+    public List<VivaCollider> colliders;
+
     [Header("Preset")]
     public BonePreset preset = BonePreset.LongHair;
-
     public enum BonePreset
     {
         Skirt,
