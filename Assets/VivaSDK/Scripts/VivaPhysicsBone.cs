@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PhysicsBone : MonoBehaviour
+public class VivaPhysicsBone : MonoBehaviour
 {
     [Header("Bone Configuration")]
     public Transform boneTransform;

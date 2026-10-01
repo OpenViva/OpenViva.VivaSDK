@@ -221,12 +221,12 @@ public class CharacterExporter : EditorWindow
 
         foreach (Component component in root.GetComponentsInChildren<Component>(true))
         {
-            if (component is PhysicsBone pb)
+            if (component is VivaPhysicsBone pb)
             {
                 PhysicsBoneData boneData = new()
                 {
                     GameObjectPath = GenerateGameObjectPath(component.gameObject, root),
-                    BonePath = PhysicsBone.GetTransformPath(pb.boneTransform),
+                    BonePath = VivaPhysicsBone.GetTransformPath(pb.boneTransform),
                     BoneName = pb.boneName,
                     Gravity = pb.gravity,
                     Damping = pb.damping,
@@ -281,7 +281,7 @@ public class CharacterExporter : EditorWindow
             {
                 if (VivaScriptSanitizer.IsScriptAllowed(type) ||
                     type == typeof(VivaDescriptor) ||
-                    type == typeof(PhysicsBone))
+                    type == typeof(VivaPhysicsBone))
                 {
                     DestroyImmediate(component);
                 }
