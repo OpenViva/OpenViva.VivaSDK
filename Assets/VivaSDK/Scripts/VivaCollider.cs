@@ -6,35 +6,38 @@ public class VivaCollider : MonoBehaviour
     public enum AxisOrientation { X, Y, Z }
 
     [Header("Settings")]
-    public ShapeType shapeToDraw = ShapeType.Capsule;
-    public AxisOrientation direction = AxisOrientation.Y;
-    public Color gizmoColor = Color.cyan;
+    [SerializeField] private ShapeType shapeToDraw = ShapeType.Capsule;
+    [SerializeField] private AxisOrientation direction = AxisOrientation.Y;
 
     [Header("Dimensions")]
     [Range(0.05f, 2f)]
-    public float length = 0.2f;
+    [SerializeField] private float length = 0.2f;
     [Range(0.05f, 0.5f)]
-    public float radius = 0.04f;
+    [SerializeField] private float radius = 0.04f;
+    [SerializeField] private Vector3 center = Vector3.zero;
 
     [Header("Resolution")]
     [Range(3, 16)]
-    public int segments = 8;
+    [SerializeField] private int segments = 8;
+    [SerializeField] private Color gizmoColor = Color.cyan;
 
     private void OnDrawGizmos()
     {
         Gizmos.color = gizmoColor;
 
+        Vector3 worldCenter = transform.TransformPoint(center);
+
         if (shapeToDraw == ShapeType.Sphere)
         {
-            Gizmos.DrawWireSphere(transform.position, radius);
+            Gizmos.DrawWireSphere(worldCenter, radius);
         }
         else
         {
-            DrawWireCapsule();
+            DrawWireCapsule(worldCenter);
         }
     }
 
-    private void DrawWireCapsule()
+    private void DrawWireCapsule(Vector3 basePosition)
     {
         Vector3 mainAxis = Vector3.zero;
         Vector3 sideA = Vector3.zero;
@@ -61,8 +64,8 @@ public class VivaCollider : MonoBehaviour
 
         float cylinderHeight = Mathf.Max(0, length - (2 * radius));
 
-        Vector3 topCapCenter = transform.position + mainAxis * (cylinderHeight / 2f);
-        Vector3 bottomCapCenter = transform.position - mainAxis * (cylinderHeight / 2f);
+        Vector3 topCapCenter = basePosition + mainAxis * (cylinderHeight / 2f);
+        Vector3 bottomCapCenter = basePosition - mainAxis * (cylinderHeight / 2f);
 
         Gizmos.DrawWireSphere(topCapCenter, radius);
         Gizmos.DrawWireSphere(bottomCapCenter, radius);
