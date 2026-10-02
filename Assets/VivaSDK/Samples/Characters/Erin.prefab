@@ -169,6 +169,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3224694594311365235}
+  - component: {fileID: 3043597941225849152}
   m_Layer: 0
   m_Name: Head
   m_TagString: Untagged
@@ -210,6 +211,26 @@ Transform:
   - {fileID: 6800786714417547885}
   m_Father: {fileID: 3663033934798823193}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3043597941225849152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 336322508810945328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ddc6edbb096fa540a09ce0eb9fc0274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VivaCollider
+  shapeType: 0
+  direction: 1
+  length: 0.2
+  radius: 0.112
+  center: {x: 0, y: 0.12, z: -0.01}
+  segments: 8
+  gizmoColor: {r: 0, g: 1, b: 1, a: 1}
+  BoneName: Head
 --- !u!1 &345635600907088932
 GameObject:
   m_ObjectHideFlags: 0
@@ -1188,6 +1209,8 @@ MonoBehaviour:
   boneTransform: {fileID: 6800786714417547885}
   bonePath: Erin/Armature/Hips/Spine/Chest/Upper Chest/Neck/Head/J_Sec_Hair1_17
   boneName: J_Sec_Hair1_17
+  colliders:
+  - {fileID: 3043597941225849152}
   preset: 4
   gravity: 1.8
   damping: 0.07
@@ -5591,6 +5614,8 @@ MonoBehaviour:
   boneTransform: {fileID: 5428771313899354741}
   bonePath: Erin/Armature/Hips/Spine/Chest/Upper Chest/Neck/Head/J_Sec_Hair1_16
   boneName: J_Sec_Hair1_16
+  colliders:
+  - {fileID: 3043597941225849152}
   preset: 4
   gravity: 1.8
   damping: 0.07
@@ -6356,6 +6381,7 @@ MonoBehaviour:
   boneTransform: {fileID: 2328068794332452469}
   bonePath: Erin/Armature/Hips/J_Sec_Hair1_18
   boneName: J_Sec_Hair1_18
+  colliders: []
   preset: 3
   gravity: 2.5
   damping: 0.15
