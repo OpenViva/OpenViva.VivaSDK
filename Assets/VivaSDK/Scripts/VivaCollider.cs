@@ -3,11 +3,11 @@ using UnityEngine;
 public class VivaCollider : MonoBehaviour
 {
     public enum ShapeType { Sphere, Capsule }
-    public enum AxisOrientation { X, Y, Z }
+    public enum AxisDirection { X, Y, Z }
 
     [Header("Settings")]
     [SerializeField] private ShapeType shapeToDraw = ShapeType.Capsule;
-    [SerializeField] private AxisOrientation direction = AxisOrientation.Y;
+    [SerializeField] private AxisDirection direction = AxisDirection.Y;
 
     [Header("Dimensions")]
     [Range(0.05f, 2f)]
@@ -20,6 +20,19 @@ public class VivaCollider : MonoBehaviour
     [Range(3, 16)]
     [SerializeField] private int segments = 8;
     [SerializeField] private Color gizmoColor = Color.cyan;
+
+    [Header("Debug Info")]
+    [SerializeField] private string BoneName;
+
+    [HideInInspector] public bool showDebugInfo = true;
+
+    private void OnValidate()
+    {
+        if (BoneName != gameObject.name)
+        {
+            BoneName = gameObject.name;
+        }
+    }
 
     private void OnDrawGizmos()
     {
@@ -45,17 +58,17 @@ public class VivaCollider : MonoBehaviour
 
         switch (direction)
         {
-            case AxisOrientation.X:
+            case AxisDirection.X:
                 mainAxis = transform.right;
                 sideA = transform.up;
                 sideB = transform.forward;
                 break;
-            case AxisOrientation.Y:
+            case AxisDirection.Y:
                 mainAxis = transform.up;
                 sideA = transform.right;
                 sideB = transform.forward;
                 break;
-            case AxisOrientation.Z:
+            case AxisDirection.Z:
                 mainAxis = transform.forward;
                 sideA = transform.right;
                 sideB = transform.up;
