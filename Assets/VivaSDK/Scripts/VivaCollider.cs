@@ -6,25 +6,23 @@ public class VivaCollider : MonoBehaviour
     public enum AxisDirection { X, Y, Z }
 
     [Header("Settings")]
-    [SerializeField] private ShapeType shapeToDraw = ShapeType.Capsule;
-    [SerializeField] private AxisDirection direction = AxisDirection.Y;
+    public ShapeType shapeType = ShapeType.Capsule;
+    public AxisDirection direction = AxisDirection.Y;
 
     [Header("Dimensions")]
     [Range(0.05f, 2f)]
-    [SerializeField] private float length = 0.2f;
+    public float length = 0.2f;
     [Range(0.05f, 0.5f)]
-    [SerializeField] private float radius = 0.04f;
-    [SerializeField] private Vector3 center = Vector3.zero;
+    public float radius = 0.04f;
+    public Vector3 center = Vector3.zero;
 
     [Header("Resolution")]
     [Range(3, 16)]
-    [SerializeField] private int segments = 8;
-    [SerializeField] private Color gizmoColor = Color.cyan;
+    public int segments = 8;
+    public Color gizmoColor = Color.cyan;
 
     [Header("Debug Info")]
-    [SerializeField] private string BoneName;
-
-    [HideInInspector] public bool showDebugInfo = true;
+    public string BoneName;
 
     private void OnValidate()
     {
@@ -38,9 +36,9 @@ public class VivaCollider : MonoBehaviour
     {
         Gizmos.color = gizmoColor;
 
-        Vector3 worldCenter = transform.TransformPoint(center);
+        Vector3 worldCenter = transform.position + (transform.rotation * center);
 
-        if (shapeToDraw == ShapeType.Sphere)
+        if (shapeType == ShapeType.Sphere)
         {
             Gizmos.DrawWireSphere(worldCenter, radius);
         }
