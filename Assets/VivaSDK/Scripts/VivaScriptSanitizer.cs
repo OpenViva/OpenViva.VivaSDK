@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.LowLevelPhysics2D;
 
 public static class VivaScriptSanitizer
 {
