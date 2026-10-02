@@ -189,16 +189,16 @@ public class CharacterExporter : EditorWindow
     }
 
     #region Data Collection
-    private void CollectCharacterData(GameObject root, VivaCharacterData data)
+    private void CollectCharacterData(GameObject character, VivaCharacterData data)
     {
-        if (root.TryGetComponent<VivaDescriptor>(out var descriptor))
+        if (character.TryGetComponent<VivaDescriptor>(out var descriptor))
         {
             data.Info = new CharacterInfo
             {
                 Name = descriptor.Name,
                 AuthorName = descriptor.AuthorName,
                 Version = descriptor.Version,
-                HeadBonePath = GenerateGameObjectPath(descriptor.HeadBone.gameObject, root),
+                HeadBonePath = VivaUtilities.GenerateGameObjectPath(descriptor.HeadBone.gameObject, character),
                 PersonalityType = descriptor.PersonalityType,
                 VoicePack = descriptor.VoicePack,
                 Description = descriptor.Description,
@@ -219,13 +219,13 @@ public class CharacterExporter : EditorWindow
             Debug.LogWarning("[Character Exporter] No VivaDescriptor found on character!");
         }
 
-        foreach (Component component in root.GetComponentsInChildren<Component>(true))
+        foreach (Component component in character.GetComponentsInChildren<Component>(true))
         {
             if (component is VivaPhysicsBone pb)
             {
                 PhysicsBoneData boneData = new()
                 {
-                    GameObjectPath = GenerateGameObjectPath(component.gameObject, root),
+                    GameObjectPath = VivaUtilities.GenerateGameObjectPath(component.gameObject, character),
                     BonePath = VivaPhysicsBone.GetTransformPath(pb.boneTransform),
                     BoneName = pb.boneName,
                     // \/ Add Colliders below! \/
@@ -248,7 +248,7 @@ public class CharacterExporter : EditorWindow
                     {
                         ColliderData newCollider = new()
                         {
-                            BoneName = collider.BoneName,
+                            BonePath = VivaUtilities.GenerateGameObjectPath(collider.transform.gameObject, character),
                             ShapeType = collider.shapeType,
                             AxisDirection = collider.direction,
                             Length = collider.length,
@@ -266,23 +266,6 @@ public class CharacterExporter : EditorWindow
 
             // TODO: Add more components here
         }
-    }
-
-    private string GenerateGameObjectPath(GameObject obj, GameObject root)
-    {
-        if (obj == root) return root.name;
-
-        List<string> parts = new();
-        Transform current = obj.transform;
-
-        while (current != null)
-        {
-            parts.Insert(0, current.name);
-            if (current.gameObject == root) break;
-            current = current.parent;
-        }
-
-        return string.Join("/", parts);
     }
     #endregion
 
