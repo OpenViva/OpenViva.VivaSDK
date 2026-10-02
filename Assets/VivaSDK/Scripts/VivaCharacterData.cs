@@ -58,13 +58,17 @@ public class PhysicsBoneData
 [Serializable]
 public class ColliderData
 {
-    public string BoneName;
+    public string BonePath;
 
-    public VivaCollider.ShapeType ShapeType;
-    public VivaCollider.AxisDirection AxisDirection;
+    public ShapeType ShapeType;
+    public Direction AxisDirection;
 
     public float Length;
     public float Radius;
     public Vector3 Center;
-
 }
+
+#region Enums
+public enum ShapeType { Sphere, Capsule }
+public enum Direction { X, Y, Z }
+#endregion
