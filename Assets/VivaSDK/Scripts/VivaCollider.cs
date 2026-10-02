@@ -2,12 +2,9 @@ using UnityEngine;
 
 public class VivaCollider : MonoBehaviour
 {
-    public enum ShapeType { Sphere, Capsule }
-    public enum AxisDirection { X, Y, Z }
-
     [Header("Settings")]
     public ShapeType shapeType = ShapeType.Capsule;
-    public AxisDirection direction = AxisDirection.Y;
+    public Direction direction = Direction.Y;
 
     [Header("Dimensions")]
     [Range(0.05f, 2f)]
@@ -21,16 +18,8 @@ public class VivaCollider : MonoBehaviour
     public int segments = 8;
     public Color gizmoColor = Color.cyan;
 
-    [Header("Debug Info")]
-    public string BoneName;
+    [HideInInspector] public string BonePath;
 
-    private void OnValidate()
-    {
-        if (BoneName != gameObject.name)
-        {
-            BoneName = gameObject.name;
-        }
-    }
 
     private void OnDrawGizmos()
     {
@@ -56,17 +45,17 @@ public class VivaCollider : MonoBehaviour
 
         switch (direction)
         {
-            case AxisDirection.X:
+            case Direction.X:
                 mainAxis = transform.right;
                 sideA = transform.up;
                 sideB = transform.forward;
                 break;
-            case AxisDirection.Y:
+            case Direction.Y:
                 mainAxis = transform.up;
                 sideA = transform.right;
                 sideB = transform.forward;
                 break;
-            case AxisDirection.Z:
+            case Direction.Z:
                 mainAxis = transform.forward;
                 sideA = transform.right;
                 sideB = transform.up;
