@@ -228,6 +228,7 @@ public class CharacterExporter : EditorWindow
                     GameObjectPath = GenerateGameObjectPath(component.gameObject, root),
                     BonePath = VivaPhysicsBone.GetTransformPath(pb.boneTransform),
                     BoneName = pb.boneName,
+                    // \/ Add Colliders below! \/
                     Gravity = pb.gravity,
                     Damping = pb.damping,
                     DistanceCompression = pb.distanceCompression,
@@ -237,10 +238,27 @@ public class CharacterExporter : EditorWindow
                     StiffnessCurveEnd = pb.stiffnessCurveEnd,
                     VelocityAttenuation = pb.velocityAttenuation,
                     UseLimit = pb.useLimit,
-                    SpeedLimit = pb.speedLimit,
-
-                    // TODO: Add more variables
+                    SpeedLimit = pb.speedLimit
                 };
+
+                // Begin adding collider data if current cloth has any
+                if (pb.colliders.Count > 0)
+                {
+                    foreach (VivaCollider collider in pb.colliders)
+                    {
+                        ColliderData newCollider = new()
+                        {
+                            BoneName = collider.BoneName,
+                            ShapeType = collider.shapeType,
+                            AxisDirection = collider.direction,
+                            Length = collider.length,
+                            Radius = collider.radius,
+                            Center = collider.center
+                        };
+
+                        boneData.Colliders.Add(newCollider);
+                    }
+                }
 
                 data.PhysicsBones.Add(boneData);
                 data.ScriptCount++;

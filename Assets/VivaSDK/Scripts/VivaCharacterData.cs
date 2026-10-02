@@ -41,7 +41,7 @@ public class PhysicsBoneData
     public string GameObjectPath;
     public string BonePath;
     public string BoneName;
-    public List<ColliderData> Colliders;
+    public List<ColliderData> Colliders = new();
 
     public float Gravity = 2f;
     public float Damping = 0.05f;
