@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.LowLevelPhysics2D;
 
 public static class VivaScriptSanitizer
 {
@@ -13,8 +14,9 @@ public static class VivaScriptSanitizer
 
         // TODO: Add more scripts in here
         // Check the name very carefully
-        _allowedScripts.Add("PhysicsBone");
-        _allowedScripts.Add("VivaDescriptor");
+        _allowedScripts.Add(nameof(VivaPhysicsBone));
+        _allowedScripts.Add(nameof(VivaDescriptor));
+        _allowedScripts.Add(nameof(VivaCollider));
 
         _initialized = true;
     }
