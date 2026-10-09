@@ -242,10 +242,7 @@ public class CharacterExporter : EditorWindow
                 // Add all recorded root bone paths if any
                 if (pb.rootBones.Count > 0)
                 {
-                    foreach (var bone in pb.bonePaths)
-                    {
-                        boneData.bonePaths.Add(bone);
-                    }
+                    boneData.bonePaths = pb.bonePaths;
                 }
 
                 // Begin adding collider data if current cloth has any
