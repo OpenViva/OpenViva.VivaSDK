@@ -57,6 +57,8 @@ public class VivaPhysicsBone : MonoBehaviour
             }
         }
 
+        gameObjectName = gameObject.name;
+
         // Auto-configure values based on preset
         ApplyPresetDefaults();
     }
