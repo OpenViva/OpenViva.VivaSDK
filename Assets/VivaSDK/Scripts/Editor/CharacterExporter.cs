@@ -226,8 +226,6 @@ public class CharacterExporter : EditorWindow
                 PhysicsBoneData boneData = new()
                 {
                     GameObjectPath = VivaUtilities.GenerateGameObjectPath(component.gameObject, character),
-                    BonePath = VivaPhysicsBone.GetTransformPath(pb.boneTransform),
-                    BoneName = pb.boneName,
                     // \/ Add Colliders below! \/
                     Gravity = pb.gravity,
                     Damping = pb.damping,
@@ -240,6 +238,15 @@ public class CharacterExporter : EditorWindow
                     UseLimit = pb.useLimit,
                     SpeedLimit = pb.speedLimit
                 };
+
+                // Add all recorded root bone paths if any
+                if (pb.rootBones.Count > 0)
+                {
+                    foreach (var bone in pb.bonePaths)
+                    {
+                        boneData.bonePaths.Add(bone);
+                    }
+                }
 
                 // Begin adding collider data if current cloth has any
                 if (pb.colliders.Count > 0)

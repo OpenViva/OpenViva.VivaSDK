@@ -39,8 +39,7 @@ public class CharacterInfo
 public class PhysicsBoneData
 {
     public string GameObjectPath;
-    public string BonePath;
-    public string BoneName;
+    public List<string> bonePaths;
     public List<ColliderData> Colliders = new();
 
     public float Gravity = 2f;

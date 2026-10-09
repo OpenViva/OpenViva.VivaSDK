@@ -4,12 +4,10 @@ using UnityEngine;
 public class VivaPhysicsBone : MonoBehaviour
 {
     [Header("Bone Configuration")]
-    public Transform boneTransform;
+    public List<Transform> rootBones;
 
-    [HideInInspector]
-    public string bonePath;
-
-    public string boneName;
+    //[HideInInspector]
+    public List<string> bonePaths;
 
     [Header("Collision")]
     public List<VivaCollider> colliders;
@@ -46,11 +44,15 @@ public class VivaPhysicsBone : MonoBehaviour
 
     private void OnValidate()
     {
-        // Auto-fill bone name from transform
-        if (boneTransform != null)
+        if (rootBones.Count > 0)
         {
-            boneName = boneTransform.name;
-            bonePath = GetTransformPath(boneTransform);
+            bonePaths.Clear();
+
+            foreach (Transform bone in rootBones)
+            {
+                string newBonePath = GetTransformPath(bone);
+                bonePaths.Add(newBonePath);
+            }
         }
 
         // Auto-configure values based on preset
@@ -111,16 +113,19 @@ public class VivaPhysicsBone : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        if (!showHierarchy || boneTransform == null)
+        if (!showHierarchy || rootBones.Count <= 0)
         {
             return;
         }
 
         // Draw sphere on the root bone
         Gizmos.color = markerColor;
-        Gizmos.DrawSphere(boneTransform.position, rootBoneSize);
+        //Gizmos.DrawSphere(boneTransform.position, rootBoneSize);
 
-        DrawBoneHierarchy(boneTransform);
+        foreach (Transform bone in rootBones)
+        {
+            DrawBoneHierarchy(bone);
+        }
     }
 
     private void DrawBoneHierarchy(Transform bone)
