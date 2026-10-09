@@ -6,7 +6,7 @@ public class VivaPhysicsBone : MonoBehaviour
     [Header("Bone Configuration")]
     public List<Transform> rootBones;
 
-    //[HideInInspector]
+    [HideInInspector]
     public List<string> bonePaths;
 
     [Header("Collision")]
@@ -46,7 +46,7 @@ public class VivaPhysicsBone : MonoBehaviour
     {
         if (rootBones.Count > 0)
         {
-            bonePaths.Clear();
+            bonePaths.Clear(); // Fixes duplicates
 
             foreach (Transform bone in rootBones)
             {
