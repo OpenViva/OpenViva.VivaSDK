@@ -7,6 +7,8 @@ public class VivaPhysicsBone : MonoBehaviour
     public List<Transform> rootBones;
 
     [HideInInspector]
+    public string gameObjectName;
+    [HideInInspector]
     public List<string> bonePaths;
 
     [Header("Collision")]

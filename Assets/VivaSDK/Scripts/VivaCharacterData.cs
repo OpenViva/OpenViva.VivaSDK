@@ -5,7 +5,7 @@ using UnityEngine;
 [Serializable]
 public class VivaCharacterData
 {
-    public int Version = 4;
+    public int Version;
     public string CharacterName;
     public string PrefabName;
     public int ScriptCount;
@@ -39,6 +39,7 @@ public class CharacterInfo
 public class PhysicsBoneData
 {
     public string GameObjectPath;
+    public string GameObjectName;
     public List<string> bonePaths;
     public List<ColliderData> Colliders = new();
 

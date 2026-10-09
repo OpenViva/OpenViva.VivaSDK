@@ -226,6 +226,7 @@ public class CharacterExporter : EditorWindow
                 PhysicsBoneData boneData = new()
                 {
                     GameObjectPath = VivaUtilities.GenerateGameObjectPath(component.gameObject, character),
+                    GameObjectName = pb.gameObjectName,
                     // \/ Add Colliders below! \/
                     Gravity = pb.gravity,
                     Damping = pb.damping,
