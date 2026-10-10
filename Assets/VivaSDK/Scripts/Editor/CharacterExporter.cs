@@ -92,7 +92,6 @@ public class CharacterExporter : EditorWindow
         VivaCharacterData characterData = new()
         {
             Version = VivaFormat.CurrentVersion,
-            CharacterName = bundleName,
             PrefabName = prefabToExport.name,
             ScriptCount = 0,
         };
@@ -211,6 +210,8 @@ public class CharacterExporter : EditorWindow
                 AuxString2 = descriptor.AuxString2,
                 AuxString3 = descriptor.AuxString3,
             };
+
+            data.CharacterName = data.Info.Name;
 
             data.ScriptCount++;
         }
